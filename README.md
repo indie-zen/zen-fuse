@@ -1,7 +1,7 @@
 # Zen FUSE
 
-Zen FUSE is an open source project implementing a distributed storage layer
-on top of Zen Spaces.
+Zen FUSE is an open source project implementing a distributed user space file
+system on top of Zen Spaces.
 
 # Project Status
 
@@ -10,5 +10,6 @@ production environment.
 
 # License
 
-Since this project utilizes libFUSE and is very close to the Linux kernel,
-I am forced to distribute this application using GPL 3.0.
+Since this project utilizes libFUSE and is tightly coupled with the Linux kernel, I am forced to distribute this application using GPL 3.0.  At some time I hope
+to remove the libFUSE dependency and redistribute this library with a more
+permissive (MIT) license.
