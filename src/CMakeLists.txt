@@ -16,7 +16,6 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ZeroMQPP_INCLUDE_DIR}
   ${ZMQ_INCLUDE_DIR} ${FUSE_INCLUDE_DIRS})
 
 add_definitions(${FUSE_DEFINITIONS})
-
 add_executable(zenfused ${SERVER_SOURCES})
 
 target_link_libraries(zenfused ${Boost_LIBRARIES} ${ZeroMQPP_LIBRARY}

@@ -52,10 +52,6 @@ int processUserOptions(void *data, const char *arg, int key,
 #define LO_OPT(t, p, v) { t, offsetof(struct zen_fuse_data, p), v }
 
 static const struct fuse_opt zen_fuse_opts[] = {
-	FUSE_OPT_KEY("debug",		      FUSE_OPT_KEY_KEEP),
-	FUSE_OPT_KEY("-d",		      FUSE_OPT_KEY_KEEP),
-	LO_OPT("debug",		      debug, 1),
-	LO_OPT("-d",		      debug, 1),
     FUSE_OPT_KEY("--profile %s", 2),
 	FUSE_OPT_END
 };
@@ -79,7 +75,7 @@ int main(int argc, char* argv[])
     }
 
     // TODO Determine the address of Zen Spaces daemon
-    
+
 
     std::cout << "Parsing command line" << std::endl;
 	if (fuse_parse_cmdline(&args, &mountpoint, nullptr, nullptr) != -1 &&
