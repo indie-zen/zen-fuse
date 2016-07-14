@@ -1,6 +1,9 @@
 #define FUSE_USE_VERSION 30
 
+#include <stdlib.h>
+
 #include <iostream>
+
 #include <cstddef>
 
 //#include <config.h>
@@ -10,18 +13,27 @@
 
 #include "ZenFuse.hpp"
 
-static struct fuse_lowlevel_ops zenfuse_ll_oper = {
-    .init = zenfuse_init,
-    .destroy = zenfuse_destroy,
-    .readdir = zenfuse_readdir,
+static struct fuse_lowlevel_ops zenfuse_ll_oper;
+static bool initializedOps = false;
 
-    .lookup		= zenfuse_lookup,
-	.getattr	= zenfuse_getattr,
-	.open		= zenfuse_open,
-	.read		= zenfuse_read,
-};
+void initOps()
+{
+    if(!initializedOps)
+    {
+        initializedOps = true;
+        zenfuse_ll_oper.init = zenfuse_init;
+        zenfuse_ll_oper.destroy = zenfuse_destroy;
+        zenfuse_ll_oper.readdir = zenfuse_readdir;
 
-struct zen_fuse_data {
+        zenfuse_ll_oper.lookup		= zenfuse_lookup;
+    	zenfuse_ll_oper.getattr	= zenfuse_getattr;
+    	zenfuse_ll_oper.open		= zenfuse_open;
+    	zenfuse_ll_oper.read		= zenfuse_read;
+    }
+}
+
+struct zen_fuse_data
+{
     int debug;
     std::string profile;
 };
@@ -60,6 +72,9 @@ int main(int argc, char* argv[])
 {
     // Create a ZenFuse object to prevent a race condition
     ZenFuse* pZenFuse = ZenFuse::instance();
+
+
+    initOps();
 
     struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
 	struct fuse_chan *ch;

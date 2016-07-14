@@ -12,7 +12,7 @@ find_package(ZeroMQPP REQUIRED)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 #find_package(Threads REQUIRED)
 
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ZeroMQPP_INCLUDE_DIR}
+include_directories(${Boost_INCLUDE_DIRS} ${ZeroMQPP_INCLUDE_DIR}
   ${ZMQ_INCLUDE_DIR} ${FUSE_INCLUDE_DIRS})
 
 add_definitions(${FUSE_DEFINITIONS})
