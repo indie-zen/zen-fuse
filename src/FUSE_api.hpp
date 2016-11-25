@@ -1,5 +1,4 @@
-#ifndef ZEN_FUSE_API_HPP_INCLUDED
-#define ZEN_FUSE_API_HPP_INCLUDED
+#pragma once
 
 #include <fuse_lowlevel.h>
 
@@ -18,5 +17,3 @@ extern "C" {
     void zenfuse_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off,
 		      struct fuse_file_info *fi);
 };
-
-#endif // !ZEN_FUSE_API_HPP_INCLUDED

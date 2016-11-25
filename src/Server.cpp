@@ -13,6 +13,9 @@
 
 #include "ZenFuse.hpp"
 
+#include <Zen/Fabric/Container.hpp>
+#include <Zen/Fabric/SpacesConnection.hpp>
+
 static struct fuse_lowlevel_ops zenfuse_ll_oper;
 static bool initializedOps = false;
 
@@ -73,7 +76,6 @@ int main(int argc, char* argv[])
     // Create a ZenFuse object to prevent a race condition
     ZenFuse* pZenFuse = ZenFuse::instance();
 
-
     initOps();
 
     struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
@@ -90,7 +92,13 @@ int main(int argc, char* argv[])
     }
 
     // TODO Determine the address of Zen Spaces daemon
+    Zen::Fabric::SpacesConnection spacesConnection("",
+        "tcp://127.0.0.1:8880",
+        "tcp://127.0.0.1:9990");
 
+    Zen::Fabric::Container container;
+    container.registerConnection(spacesConnection);
+    container.startProcessing();
 
     std::cout << "Parsing command line" << std::endl;
 	if (fuse_parse_cmdline(&args, &mountpoint, nullptr, nullptr) != -1 &&
@@ -105,6 +113,9 @@ int main(int argc, char* argv[])
 
 				/* Block until ctrl+c or fusermount -u */
 				err = fuse_session_loop(se);
+                
+                // Don't process any more messages
+                container.stopProcessing();
 
 				fuse_remove_signal_handlers(se);
 				fuse_session_remove_chan(ch);
@@ -114,6 +125,9 @@ int main(int argc, char* argv[])
 		fuse_unmount(mountpoint, ch);
 	}
 	fuse_opt_free_args(&args);
+
+    container.stopProcessing();
+    container.waitForJoin();
 
 	return err ? 1 : 0;
 }

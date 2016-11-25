@@ -11,9 +11,12 @@ static ZenFuse* pZenFuse = nullptr;
 static const char *hello_str = "Hello World!\n";
 static const char *hello_name = "hello";
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ZenFuse*
 ZenFuse::instance()
 {
+	// TODO Guard.
+	//  This is not thread safe, but for now only accessing this once.
     if(pZenFuse == nullptr)
     {
         pZenFuse = new ZenFuse();
@@ -21,6 +24,7 @@ ZenFuse::instance()
     return pZenFuse;
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ZenFuse::ZenFuse()
 :   m_pUserData(nullptr)
 ,   m_pSession(nullptr)
@@ -29,11 +33,13 @@ ZenFuse::ZenFuse()
 
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 ZenFuse::~ZenFuse()
 {
 
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 ZenFuse::init(void* _pUserData, struct fuse_conn_info* _pConn)
 {
@@ -41,17 +47,21 @@ ZenFuse::init(void* _pUserData, struct fuse_conn_info* _pConn)
     m_pUserData = _pUserData;
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 ZenFuse::destroy(void* _pUserData)
 {
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 struct dirbuf {
 	char *p;
 	size_t size;
 };
 
-static void dirbuf_add(fuse_req_t req, struct dirbuf *b, const char *name,
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static void 
+dirbuf_add(fuse_req_t req, struct dirbuf *b, const char *name,
 		       fuse_ino_t ino)
 {
 	struct stat stbuf;
@@ -64,9 +74,12 @@ static void dirbuf_add(fuse_req_t req, struct dirbuf *b, const char *name,
 			  b->size);
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 #define min(x, y) ((x) < (y) ? (x) : (y))
 
-static int reply_buf_limited(fuse_req_t req, const char *buf, size_t bufsize,
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static int 
+reply_buf_limited(fuse_req_t req, const char *buf, size_t bufsize,
 			     off_t off, size_t maxsize)
 {
 	if (off < bufsize)
@@ -76,7 +89,9 @@ static int reply_buf_limited(fuse_req_t req, const char *buf, size_t bufsize,
 		return fuse_reply_buf(req, NULL, 0);
 }
 
-static int hello_stat(fuse_ino_t ino, struct stat *stbuf)
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
+static int
+hello_stat(fuse_ino_t ino, struct stat *stbuf)
 {
 	stbuf->st_ino = ino;
 	switch (ino) {
@@ -97,6 +112,7 @@ static int hello_stat(fuse_ino_t ino, struct stat *stbuf)
 	return 0;
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 ZenFuse::readDir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off,
          struct fuse_file_info *fi)
@@ -118,6 +134,7 @@ ZenFuse::readDir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off,
 	}
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 ZenFuse::lookup(fuse_req_t req, fuse_ino_t parent, const char *name)
 {
@@ -136,6 +153,7 @@ ZenFuse::lookup(fuse_req_t req, fuse_ino_t parent, const char *name)
 	}
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 ZenFuse::getattr(fuse_req_t req, fuse_ino_t ino,
         struct fuse_file_info *fi)
@@ -151,6 +169,7 @@ ZenFuse::getattr(fuse_req_t req, fuse_ino_t ino,
 		fuse_reply_attr(req, &stbuf, 1.0);
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 ZenFuse::open(fuse_req_t req, fuse_ino_t ino,
         struct fuse_file_info *fi)
@@ -163,6 +182,7 @@ ZenFuse::open(fuse_req_t req, fuse_ino_t ino,
 		fuse_reply_open(req, fi);
 }
 
+//-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~
 void
 ZenFuse::read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off,
         struct fuse_file_info *fi)
@@ -172,3 +192,4 @@ ZenFuse::read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off,
 	assert(ino == 2);
 	reply_buf_limited(req, hello_str, strlen(hello_str), off, size);
 }
+
